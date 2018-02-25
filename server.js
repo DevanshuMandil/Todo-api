@@ -41,10 +41,26 @@ app.get('/todos/:id', function(req, res) {
 	//res.send('asking for todo whose id is:'+req.params.id);
 
 	var todoId = parseInt(req.params.id, 10);
-	var matchedTodo = _.findWhere(todos, {
-		id: todoId
-	});
 
+	db.todo.findById(todoId).then(function(todo){
+		
+		if(todo)
+		{
+			res.json(todo.toJSON());	
+		}
+		else
+		{
+			res.status(404).send();
+		}
+		
+	}).catch(function(e){
+		res.status(500).send();
+	});
+	// var matchedTodo = _.findWhere(todos, {
+	// 	id: todoId
+	// });
+
+	// My code...
 	//var matchedTodo;
 	// todos.forEach(function(todo){
 
@@ -54,11 +70,13 @@ app.get('/todos/:id', function(req, res) {
 	// 	}
 	// });
 
-	if (matchedTodo) {
-		res.json(matchedTodo);
-	} else {
-		res.status(404).send();
-	}
+
+	// Adv. code...
+	// if (matchedTodo) {
+	// 	res.json(matchedTodo);
+	// } else {
+	// 	res.status(404).send();
+	// }
 });
 
 // POST /todos
