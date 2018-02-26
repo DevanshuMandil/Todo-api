@@ -1,5 +1,5 @@
 var Sequelize = require('sequelize');
-var env = process.env.NODE.ENV || 'development';
+var env = process.env.NODE_ENV || 'development';
 var sequelize;
 
 if(env === 'production')
