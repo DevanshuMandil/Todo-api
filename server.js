@@ -132,32 +132,39 @@ app.get('/', function(req, res) {
 });
 
 // POST /users
-app.post('/users',function(req, res){
-	var body = _.pick(req.body,'email','password');
+app.post('/users', function(req, res) {
+	var body = _.pick(req.body, 'email', 'password');
 
 	db.user.create({
 		email: body.email.trim(),
 		password: body.password
-	}).then(function(user){
+	}).then(function(user) {
 		res.json(user.toPublicJSON());
-	}).catch(function(e){
+	}).catch(function(e) {
 		res.status(400).json(e);
 	});
 });
 
 //POST /users/login
-app.post('/users/login', function(req,res){
-	var body= _.pick(req.body , 'email', 'password');
-	
-	db.user.authenticate(body).then(function(user){
-		res.json(user.toPublicJSON());
-	},function(){
+app.post('/users/login', function(req, res) {
+	var body = _.pick(req.body, 'email', 'password');
+
+	db.user.authenticate(body).then(function(user) {
+
+		var token = user.generateToken('authentication');
+
+		if (token) {
+			res.header('Auth', token).json(user.toPublicJSON());
+		} else {
+			res.status(401).send();
+		}
+	}, function() {
 		res.status(401).send();
 	});
 });
 
 db.sequelize.sync({
-	force: false
+	force: true
 }).then(function() {
 	app.listen(PORT, function(req, res) {
 		console.log('Express Listening on port ' + PORT + '!');
